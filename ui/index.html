@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Manager</title>
+    <!-- Link to external CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Book Manager</h1>
+        <form id="bookForm">
+            <input type="text" id="title" placeholder="Title" required>
+            <input type="text" id="authors" placeholder="Authors" required>
+            <input type="text" id="isbn" placeholder="ISBN" required>
+            <input type="text" id="publication_date" placeholder="Publication Date (optional)">
+            <input type="text" id="genre" placeholder="Genre (optional)">
+            <textarea id="description" placeholder="Description (optional)"></textarea>
+            <button type="submit">Add Book</button>
+        </form>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Authors</th>
+                    <th>ISBN</th>
+                    <th>Average Rating</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="bookTable">
+                <!-- Table rows will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+    <!-- Link to external JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
