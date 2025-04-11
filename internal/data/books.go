@@ -42,63 +42,66 @@ func (m *BookModel) Exists(bookID int) (bool, error) {
 	return exists, nil
 }
 
+// func ValidateBook(v *validator.Validator, book *Book) {
+// 	// Validate the Title field
+// 	v.Check(strings.TrimSpace(book.Title) != "", "title", "must be provided")
+// 	v.Check(len(book.Title) <= 200, "title", "must not be more than 200 bytes long")
+
+// 	// Validate the Authors field
+// 	v.Check(strings.TrimSpace(book.Authors) != "", "authors", "must be provided")
+// 	v.Check(len(book.Authors) <= 200, "authors", "must not be more than 200 bytes long")
+
+// 	v.Check(strings.TrimSpace(book.ISBN) != "", "isbn", "must be provided")
+// 	v.Check(len(book.ISBN) == 13, "isbn", "must be 13 digits long")
+// 	v.Check(regexp.MustCompile(`^\d{13}$`).MatchString(book.ISBN), "isbn", "must contain only digits")
+
+// 	// Check if the publication date is provided
+// 	v.Check(strings.TrimSpace(book.PublicationDate) != "", "publication_date", "must be provided")
+
+// 	// Regular expression to match the format "July 12, 2024"
+// 	dateRegex := `^[A-Za-z]+ \d{1,2}, \d{4}$`
+// 	re := regexp.MustCompile(dateRegex)
+
+// 	// Check if the date matches the regex
+// 	if !re.MatchString(book.PublicationDate) {
+// 		v.AddError("publication_date", "must be in the format 'July 12, 2020'")
+// 	}
+
+// 	// Check if the length of the publication date is less than or equal to 200
+// 	v.Check(len(book.PublicationDate) <= 200, "publication_date", "must not be more than 200 bytes long")
+
+// 	v.Check(strings.TrimSpace(book.Genre) != "", "genre", "must be provided")
+// 	v.Check(len(book.Genre) <= 200, "genre", "must not be more than 200 bytes long")
+
+// 	// Validate the Description field
+// 	v.Check(strings.TrimSpace(book.Description) != "", "description", "must be provided")
+// 	v.Check(len(book.Description) <= 200, "description", "must not be more than 200 bytes long")
+
+// }
+
+func (m *BookModel) Insert(book *Book) error {
+	query := `
+		INSERT INTO books (title, authors, isbn, publication_date, genre, description)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING id, version
+	`
+	args := []any{book.Title, book.Authors, book.ISBN, book.PublicationDate, book.Genre, book.Description}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	return m.DB.QueryRowContext(ctx, query, args...).Scan(&book.ID, &book.Version)
+}
+
 func ValidateBook(v *validator.Validator, book *Book) {
-	// Validate the Title field
 	v.Check(strings.TrimSpace(book.Title) != "", "title", "must be provided")
-	v.Check(len(book.Title) <= 200, "title", "must not be more than 200 bytes long")
-
-	// Validate the Authors field
 	v.Check(strings.TrimSpace(book.Authors) != "", "authors", "must be provided")
-	v.Check(len(book.Authors) <= 200, "authors", "must not be more than 200 bytes long")
-
 	v.Check(strings.TrimSpace(book.ISBN) != "", "isbn", "must be provided")
 	v.Check(len(book.ISBN) == 13, "isbn", "must be 13 digits long")
 	v.Check(regexp.MustCompile(`^\d{13}$`).MatchString(book.ISBN), "isbn", "must contain only digits")
-
-	// Check if the publication date is provided
 	v.Check(strings.TrimSpace(book.PublicationDate) != "", "publication_date", "must be provided")
-
-	// Regular expression to match the format "July 12, 2024"
-	dateRegex := `^[A-Za-z]+ \d{1,2}, \d{4}$`
-	re := regexp.MustCompile(dateRegex)
-
-	// Check if the date matches the regex
-	if !re.MatchString(book.PublicationDate) {
-		v.AddError("publication_date", "must be in the format 'July 12, 2020'")
-	}
-
-	// Check if the length of the publication date is less than or equal to 200
-	v.Check(len(book.PublicationDate) <= 200, "publication_date", "must not be more than 200 bytes long")
-
 	v.Check(strings.TrimSpace(book.Genre) != "", "genre", "must be provided")
-	v.Check(len(book.Genre) <= 200, "genre", "must not be more than 200 bytes long")
-
-	// Validate the Description field
-	v.Check(strings.TrimSpace(book.Description) != "", "description", "must be provided")
-	v.Check(len(book.Description) <= 200, "description", "must not be more than 200 bytes long")
-
-}
-
-func (c BookModel) Insert(book *Book) error {
-	// the SQL query to be executed against the database table
-	query := `
-	INSERT INTO books (title, authors, isbn, publication_date, genre, description) 
-	VALUES ($1, $2, $3, $4, $5, $6) 
-	RETURNING id, version;
-		 `
-	// the actual values to replace $1, and $2
-	args := []any{book.Title, book.Authors, book.ISBN, book.PublicationDate, book.Genre, book.Description}
-
-	// Create a context with a 3-second timeout. No database
-	// operation should take more than 3 seconds or we will quit it
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	// execute the query against the comments database table. We ask for the the
-	// id, created_at, and version to be sent back to us which we will use
-	// to update the Comment struct later on
-	return c.DB.QueryRowContext(ctx, query, args...).Scan(
-		&book.ID,
-		&book.Version)
+	v.Check(len(book.Description) <= 500, "description", "must not be more than 500 bytes long")
 }
 
 // Get a specific Comment from the comments table

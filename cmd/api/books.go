@@ -20,8 +20,7 @@ var incomingData struct {
 }
 
 func (a *applicationDependencies) createBookHandler(w http.ResponseWriter, r *http.Request) {
-	// create a struct to hold a comment
-	// we use struct tags to make the names display in lowercase
+	// Create a struct to hold incoming data
 	var incomingData struct {
 		Title           string `json:"title"`
 		Authors         string `json:"authors"`
@@ -30,13 +29,15 @@ func (a *applicationDependencies) createBookHandler(w http.ResponseWriter, r *ht
 		Genre           string `json:"genre"`
 		Description     string `json:"description"`
 	}
-	// perform the decoding
+
+	// Decode the request JSON
 	err := a.readJSON(w, r, &incomingData)
 	if err != nil {
 		a.badRequestResponse(w, r, err)
 		return
 	}
 
+	// Create a book instance
 	book := &data.Book{
 		Title:           incomingData.Title,
 		Authors:         incomingData.Authors,
@@ -45,24 +46,27 @@ func (a *applicationDependencies) createBookHandler(w http.ResponseWriter, r *ht
 		Genre:           incomingData.Genre,
 		Description:     incomingData.Description,
 	}
-	// Initialize a Validator instance
-	v := validator.New()
 
+	// Validate the book using a Validator instance
+	v := validator.New()
 	data.ValidateBook(v, book)
 	if !v.IsEmpty() {
-		a.failedValidationResponse(w, r, v.Errors) // implemented later
+		a.failedValidationResponse(w, r, v.Errors)
 		return
 	}
+
+	// Insert the book into the database
 	err = a.bookModel.Insert(book)
 	if err != nil {
 		a.serverErrorResponse(w, r, err)
 		return
 	}
 
-	// Set a Location header. The path to the newly created comment
+	// Set a Location header for the newly created resource
 	headers := make(http.Header)
 	headers.Set("Location", fmt.Sprintf("/api/v1/books/%d", book.ID))
 
+	// Respond with the created book
 	data := envelope{
 		"Book": book,
 	}
@@ -71,7 +75,6 @@ func (a *applicationDependencies) createBookHandler(w http.ResponseWriter, r *ht
 		a.serverErrorResponse(w, r, err)
 		return
 	}
-
 }
 
 func (a *applicationDependencies) displayBookHandler(w http.ResponseWriter, r *http.Request) {
