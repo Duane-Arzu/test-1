@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Duane-Arzu/test3.git/internal/validator"
+	"github.com/Duane-Arzu/test-1.git/internal/validator"
 )
 
 // each name begins with uppercase so that they are exportable/public
