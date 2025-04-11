@@ -8,7 +8,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const fetchBooks = async () => {
         try {
             const response = await fetch(API_URL);
-            const books = await response.json();
+            const data = await response.json();
+const books = data.books || [];
             bookTable.innerHTML = books.map((book) => `
                 <tr>
                     <td>${book.title}</td>
