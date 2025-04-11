@@ -50,9 +50,14 @@ func (a *applicationDependencies) routes() http.Handler {
 	router.HandlerFunc(http.MethodPost, "/api/v1/users", a.registerUserHandler)
 
 	// Serve static files from the "./ui" folder
-	fileServer := http.FileServer(http.Dir("./ui"))
-	router.Handler(http.MethodGet, "/", fileServer)
-	router.Handler(http.MethodGet, "/static/*filepath", http.StripPrefix("/static", fileServer))
+	// Serve index.html directly
+	router.HandlerFunc(http.MethodGet, "/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./ui/html/index.html")
+	})
+
+	// Serve static CSS and JS
+	staticFiles := http.FileServer(http.Dir("./ui/static"))
+	router.Handler(http.MethodGet, "/static/*filepath", http.StripPrefix("/static", staticFiles))
 	return a.recoverPanic(a.rateLimit(a.authenticate(router)))
 	//----------------------------------------------------------------------------
 	// // Public routes
