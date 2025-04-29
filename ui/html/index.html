@@ -11,15 +11,45 @@
 <body>
     <div class="container">
         <h1>Book Manager</h1>
-        <form id="bookForm">
-            <input type="text" id="title" placeholder="Title" required>
-            <input type="text" id="authors" placeholder="Authors" required>
-            <input type="text" id="isbn" placeholder="ISBN" required>
-            <input type="text" id="publication_date" placeholder="Publication Date (optional)">
-            <input type="text" id="genre" placeholder="Genre (optional)">
-            <textarea id="description" placeholder="Description (optional)"></textarea>
-            <button type="submit">Add Book</button>
+        <form id="bookForm" class="form-grid">
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" placeholder="Title" required>
+                <span id="title-error" class="error-message"></span>
+            </div>
+        
+            <div class="form-group">
+                <label for="authors">Authors</label>
+                <input type="text" id="authors" placeholder="Authors" required>
+                <span id="authors-error" class="error-message"></span>
+            </div>
+        
+            <div class="form-group">
+                <label for="isbn">ISBN</label>
+                <input type="text" id="isbn" placeholder="ISBN" required>
+                <span id="isbn-error" class="error-message"></span>
+            </div>
+        
+            <div class="form-group">
+                <label for="publication_date">Publication Date</label>
+                <input type="text" id="publication_date" placeholder="Publication Date (optional)">
+            </div>
+        
+            <div class="form-group">
+                <label for="genre">Genre</label>
+                <input type="text" id="genre" placeholder="Genre (optional)">
+            </div>
+        
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" placeholder="Description (optional)"></textarea>
+            </div>
+        
+            <div class="form-actions">
+                <button type="submit">Add Book</button>
+            </div>
         </form>
+        
         <table>
             <thead>
                 <tr>

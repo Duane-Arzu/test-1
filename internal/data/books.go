@@ -95,7 +95,9 @@ func (m *BookModel) Insert(book *Book) error {
 
 func ValidateBook(v *validator.Validator, book *Book) {
 	v.Check(strings.TrimSpace(book.Title) != "", "title", "must be provided")
+	v.Check(regexp.MustCompile(`^[A-Za-z\s]+$`).MatchString(book.Title), "title", "must only contain letters")
 	v.Check(strings.TrimSpace(book.Authors) != "", "authors", "must be provided")
+	v.Check(regexp.MustCompile(`^[A-Za-z\s]+$`).MatchString(book.Authors), "authors", "must only contain letters")
 	v.Check(strings.TrimSpace(book.ISBN) != "", "isbn", "must be provided")
 	v.Check(len(book.ISBN) == 13, "isbn", "must be 13 digits long")
 	v.Check(regexp.MustCompile(`^\d{13}$`).MatchString(book.ISBN), "isbn", "must contain only digits")
@@ -103,6 +105,30 @@ func ValidateBook(v *validator.Validator, book *Book) {
 	v.Check(strings.TrimSpace(book.Genre) != "", "genre", "must be provided")
 	v.Check(len(book.Description) <= 500, "description", "must not be more than 500 bytes long")
 }
+
+// func (c BookModel) ISBNExists(isbn string) bool {
+// 	query := `
+//         SELECT 1
+//         FROM books
+//         WHERE isbn = $1
+//         LIMIT 1
+//     `
+
+// 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+// 	defer cancel()
+
+// 	var exists int
+// 	err := c.DB.QueryRowContext(ctx, query, isbn).Scan(&exists)
+// 	if err != nil {
+// 		if errors.Is(err, sql.ErrNoRows) {
+// 			return false
+// 		}
+// 		// Log the error if needed
+// 		return false
+// 	}
+
+// 	return true
+// }
 
 // Get a specific Comment from the comments table
 func (c BookModel) Get(id int64) (*Book, error) {
