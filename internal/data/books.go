@@ -106,7 +106,7 @@ func ValidateBook(v *validator.Validator, book *Book) {
 	v.Check(len(book.Description) <= 500, "description", "must not be more than 500 bytes long")
 }
 
-// func (c BookModel) ISBNExists(isbn string) bool {
+// func (c BookModel) ISBNExists(v *validator.Validator, isbn int) bool {
 // 	query := `
 //         SELECT 1
 //         FROM books

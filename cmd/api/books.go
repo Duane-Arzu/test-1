@@ -55,7 +55,11 @@ func (a *applicationDependencies) createBookHandler(w http.ResponseWriter, r *ht
 		a.failedValidationResponse(w, r, v.Errors)
 		return
 	}
-
+	// a.bookModel.BookExists(v, book.ISBN)
+	// if !v.IsEmpty() {
+	// 	a.failedValidationResponse(w, r, v.Errors)
+	// 	return
+	// }
 	// Insert the book into the database
 	err = a.bookModel.Insert(book)
 	if err != nil {
