@@ -20,7 +20,7 @@ var incomingData struct {
 }
 
 func (a *applicationDependencies) createBookHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("bookhandler called")
+	// fmt.Println("bookhandler called")
 	// Create a struct to hold incoming data
 	var incomingData struct {
 		Title           string `json:"title"`

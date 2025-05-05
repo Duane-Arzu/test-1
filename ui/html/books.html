@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Books List</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/script.js"></script>
+    
+</head>
+<body>
+    <div class="container">
+        <h1>Books List</h1>
+        <p>Book successfully added!</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Authors</th>
+                    <th>ISBN</th>
+                    <th>Average Rating</th>
+                </tr>
+            </thead>
+            <tbody id="bookTable">
+                <!-- Fetched data will be inserted here -->
+            </tbody>
+        </table>
+        <a href="/">← Back to Form</a>
+    </div>
+
+    <script>
+        // const API_URL = "http://localhost:8000/api/v1/books";
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const bookTable = document.getElementById("bookTable");
+
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                const books = data.books || [];
+                bookTable.innerHTML = books.map(book => `
+                    <tr>
+                        <td>${book.title}</td>
+                        <td>${book.authors}</td>
+                        <td>${book.isbn}</td>
+                        <td>${book.average_rating}</td>
+                        <td>
+                      <button class="delete" onclick="deleteBook(${book.id})">Delete</button>
+                  </td>
+                    </tr>
+                    `
+                ).join("");
+            } catch (err) {
+                console.error("Error loading books:", err);
+                bookTable.innerHTML = "<tr><td colspan='4'>Failed to load books.</td></tr>";
+            }
+        });
+        async function deleteBook(id) {
+    try {
+        await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+        location.reload();
+    } catch (error) {
+        console.error("Error deleting book:", error);
+    }
+}
+async function fetchBook () {
+  try {
+    const response = await fetch(API_URL);
+    const data = await response.json();
+    const books = data.books || [];
+    bookTable.innerHTML = books
+      .map(
+        (book) => `
+                <tr>
+                    <td>${book.title}</td>
+                    <td>${book.authors}</td>
+                    <td>${book.isbn}</td>
+                    <td>${book.average_rating}</td>
+                    <td>
+                        <button class="delete" onclick="deleteBook(${book.id})">Delete</button>
+                    </td>
+                </tr>
+            `
+          
+      )
+      .join("");
+  } catch (error) {
+    console.error("Error fetching books:", error);
+  }
+};
+    </script>
+   
+   
+    <!-- Link to external JavaScript -->
+    <script src="/static/script.js"></script>
+</body>
+</html>

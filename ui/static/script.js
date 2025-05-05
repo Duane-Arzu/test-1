@@ -1,8 +1,12 @@
-const API_URL = "http://localhost:8000/api/v1/books";
+let API_URL = "http://localhost:8000/api/v1/books";
 
 document.addEventListener("DOMContentLoaded", () => {
   const bookForm = document.getElementById("bookForm");
   const bookTable = document.getElementById("bookTable");
+
+  document.getElementById("isbn").style.border = "";
+  document.getElementById("title").style.border = "";
+  document.getElementById("authors").style.border = "";
 
   // Fetch and display books
   const fetchBooks = async () => {
@@ -23,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     </td>
                 </tr>
             `
+            
         )
         .join("");
     } catch (error) {
@@ -60,30 +65,45 @@ document.addEventListener("DOMContentLoaded", () => {
     resp = await req.json();
     console.log("Response Body:", resp);
     if (!resp.error) {
-      bookForm.reset();
-      fetchBooks();
-      document.getElementById("isbn-error").textContent = "";
-      document.getElementById("title-error").textContent = "";
-      document.getElementById("author-error").textContent = "";
+      // Redirect to books list page after successful book addition
+      location.href = "http://localhost:8000/books";
+      // bookForm.reset();
+      // fetchBooks();
+      // document.getElementById("isbn-error").textContent = "";
+      // document.getElementById("title-error").textContent = "";
+      // document.getElementById("authors-error").textContent = "";
+      // document.getElementById("isbn").style.border = "";
+      // document.getElementById("title").style.border = "";
+      // document.getElementById("authors").style.border = "";
+
+      
+
 
     } else{
         if(resp.error.isbn){
             document.getElementById("isbn-error").textContent = resp.error.isbn;
+            document.getElementById("isbn").style.border = "1px solid red";
+            
         }
         else{
             document.getElementById("isbn-error").textContent = "";
+            document.getElementById("isbn").style.border = "1px solid #ccc";
         }
         if(resp.error.title){
             document.getElementById("title-error").textContent = resp.error.title;
+            document.getElementById("title").style.border = "1px solid red";
         }
         else{
             document.getElementById("title-error").textContent = "";
+            document.getElementById("title").style.border = "1px solid #ccc";
         }
         if(resp.error.authors){
             document.getElementById("authors-error").textContent = resp.error.authors;
+            document.getElementById("authors").style.border = "1px solid red";
         }
         else{
             document.getElementById("authors-error").textContent = "";
+            document.getElementById("authors").style.border = "1px solid #ccc";
         }
 
     }
@@ -94,15 +114,27 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Delete a book
-  window.deleteBook = async (id) => {
-    try {
-      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-      fetchBooks();
-    } catch (error) {
-      console.error("Error deleting book:", error);
-    }
-  };
+//   async function deleteBook(id) {
+//     try {
+//         await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+//         fetchBooks();
+//     } catch (error) {
+//         console.error("Error deleting book:", error);
+//     }
+// }
+
+  // window.deleteBook = async (id) => {
+  //   try {
+  //     await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+  //     fetchBooks();
+  //   } catch (error) {
+  //     console.error("Error deleting book:", error);
+  //   }
+  // };
 
   // Initialize by fetching books
   fetchBooks();
 });
+
+
+

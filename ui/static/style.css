@@ -1,4 +1,4 @@
-/* Basic styling for Book Manager UI */
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -129,4 +129,9 @@ button.delete:hover {
     color: red;
     font-size: 0.8rem;
     margin-top: 5px;
+}
+
+.input-error {
+    border: 2px solid red !important;
+    outline: none;
 }

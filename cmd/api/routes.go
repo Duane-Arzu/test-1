@@ -54,6 +54,10 @@ func (a *applicationDependencies) routes() http.Handler {
 		http.ServeFile(w, r, "./ui/html/index.html")
 	})
 
+	router.HandlerFunc(http.MethodGet, "/books", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./ui/html/books.html")
+	})
+
 	// Serve all static files under /static (CSS, JS, images, etc.)
 	fileServer := http.FileServer(http.Dir("./ui/static"))
 	router.Handler(http.MethodGet, "/static/*filepath", http.StripPrefix("/static", fileServer))
