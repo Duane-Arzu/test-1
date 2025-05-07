@@ -32,6 +32,7 @@ func (a *applicationDependencies) createBookHandler(w http.ResponseWriter, r *ht
 	}
 
 	// Decode the request JSON
+	// println(r.FormValue("title"))
 	err := a.readJSON(w, r, &incomingData)
 	if err != nil {
 		a.badRequestResponse(w, r, err)
