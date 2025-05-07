@@ -7,7 +7,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>Books List</h1>
+        <header>
+            <h1>Books List</h1>
+            <div id="auth-section" class="auth-section">
+                <!-- Authentication buttons will be added here via JavaScript -->
+            </div>
+        </header>
+        
         <p>Book successfully added!</p>
         <table>
             <thead>
@@ -29,9 +35,18 @@
             <h2>Edit Book</h2>
             <form id="editForm">
                 <input type="hidden" id="edit-id">
-                <label>Title:</label><input type="text" id="edit-title"><br>
-                <label>Authors:</label><input type="text" id="edit-authors"><br>
-                <label>ISBN:</label><input type="text" id="edit-isbn"><br>
+                <div class="form-group">
+                    <label for="edit-title">Title:</label>
+                    <input type="text" id="edit-title">
+                </div>
+                <div class="form-group">
+                    <label for="edit-authors">Authors:</label>
+                    <input type="text" id="edit-authors">
+                </div>
+                <div class="form-group">
+                    <label for="edit-isbn">ISBN:</label>
+                    <input type="text" id="edit-isbn">
+                </div>
                 <button type="submit">Save Changes</button>
                 <button type="button" onclick="closeEditModal()">Cancel</button>
             </form>
@@ -40,6 +55,7 @@
         <a href="/">← Back to Form</a>
     </div>
 
+    <script src="/static/auth.js"></script>
     <script src="/static/script.js"></script>
 </body>
 </html>
