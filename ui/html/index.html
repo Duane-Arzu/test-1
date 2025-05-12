@@ -1,195 +1,190 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Manager</title>
-    <!-- Link to external CSS -->
-    <link rel="stylesheet" href="/static/style.css">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Book Manager</title>
+  <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
-    <div class="container">
-        <header><h1>Book Manager</h1> 
-            <div id="auth-section" class="auth-section">
-                <!-- Authentication buttons will be added here via JavaScript -->
+  <div class="container">
+    <header>
+      <h1>Book Manager</h1>
+      <div id="auth-section" class="auth-section">
         <button id="login-btn" class="auth-btn">Login</button>
         <button id="register-btn" class="auth-btn">Register</button>
-            </div></header>
-        <form id="bookForm" class="form-grid">
-            <div class="form-group">
-                <label for="title">Title</label>
-                <input type="text" id="title" placeholder="Title" >
-                <span id="title-error" class="error-message"></span>
-            </div>
-        
-            <div class="form-group">
-                <label for="authors">Authors</label>
-                <input type="text" id="authors" placeholder="Authors" >
-                <span id="authors-error" class="error-message"></span>
-            </div>
-        
-            <div class="form-group">
-                <label for="isbn">ISBN</label>
-                <input type="text" id="isbn" placeholder="ISBN" >
-                <span id="isbn-error" class="error-message"></span>
-            </div>
-        
-            <div class="form-group">
-                <label for="publication_date">Publication Date</label>
-                <input type="text" id="publication_date" placeholder="Publication Date (optional)">
-            </div>
-        
-            <div class="form-group">
-                <label for="genre">Genre</label>
-                <input type="text" id="genre" placeholder="Genre (optional)">
-            </div>
-        
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea id="description" placeholder="Description (optional)"></textarea>
-            </div>
-        
-            <div class="form-actions">
-                <button type="submit">Add Book</button>
-            </div>
-        </form>
-            <div class="link-container">
-                <a href="/books">View All Books</a>
-            </div>
+      </div>
+    </header>
+
+    <!-- Only show book form when logged in -->
+    <div id="book-section" style="display: none;">
+      <form id="bookForm" class="form-grid">
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" id="title" placeholder="Title">
         </div>
-    
-        
-        <!-- <table>
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Authors</th>
-                    <th>ISBN</th>
-                    <th>Average Rating</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="bookTable"> -->
-                <!-- Table rows will be dynamically inserted here -->
-            <!-- </tbody>
-        </table> -->
+
+        <div class="form-group">
+          <label for="authors">Authors</label>
+          <input type="text" id="authors" placeholder="Authors">
+        </div>
+
+        <div class="form-group">
+          <label for="isbn">ISBN</label>
+          <input type="text" id="isbn" placeholder="ISBN">
+        </div>
+
+        <div class="form-group">
+          <label for="publication_date">Publication Date</label>
+          <input type="text" id="publication_date" placeholder="Publication Date (optional)">
+        </div>
+
+        <div class="form-group">
+          <label for="genre">Genre</label>
+          <input type="text" id="genre" placeholder="Genre (optional)">
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description" placeholder="Description (optional)"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit">Add Book</button>
+        </div>
+      </form>
+
+      <div class="link-container">
+        <a href="/books">View All Books</a>
+      </div>
     </div>
-     <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    // LOGIN BUTTON
-    document.getElementById("login-btn").addEventListener("click", function() {
-      const modal = document.createElement("div");
-      modal.className = "auth-modal";
-      modal.innerHTML = `
-        <div class="auth-modal-content">
-          <span class="close-modal" onclick="this.closest('.auth-modal').remove()">&times;</span>
-          <h2>Login</h2>
-          <form id="login-form">
-            <div class="form-group">
-              <label for="login-email">Email:</label>
-              <input type="email" id="login-email" required>
-            </div>
-            <div class="form-group">
-              <label for="login-password">Password:</label>
-              <input type="password" id="login-password" required>
-            </div>
-            <div id="login-error" class="error-message"></div>
-            <button type="submit">Login</button>
-          </form>
-        </div>
-      `;
-      document.body.appendChild(modal);
+  </div>
 
-      document.getElementById("login-form").addEventListener("submit", async function(e) {
-        e.preventDefault();
-        const email = document.getElementById("login-email").value;
-        const password = document.getElementById("login-password").value;
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const authSection = document.getElementById("auth-section");
+      const token = localStorage.getItem("auth_token");
 
-        try {
-          const response = await fetch("/api/v1/tokens/authentication", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
-          });
+      if (token) {
+        authSection.innerHTML = `
+          <button id="logout-btn" class="auth-btn">Logout</button>
+        `;
+        document.getElementById("logout-btn").addEventListener("click", () => {
+          localStorage.removeItem("auth_token");
+          location.reload();
+        });
+        document.getElementById("book-section").style.display = "block";
+      } else {
+        document.getElementById("book-section").style.display = "none";
+      }
 
-          const data = await response.json();
+      // Login Modal
+      document.getElementById("login-btn")?.addEventListener("click", () => {
+        const modal = document.createElement("div");
+        modal.className = "auth-modal";
+        modal.innerHTML = `
+          <div class="auth-modal-content">
+            <span class="close-modal" onclick="this.closest('.auth-modal').remove()">&times;</span>
+            <h2>Login</h2>
+            <form id="login-form">
+              <div class="form-group">
+                <label for="login-email">Email:</label>
+                <input type="email" id="login-email" required>
+              </div>
+              <div class="form-group">
+                <label for="login-password">Password:</label>
+                <input type="password" id="login-password" required>
+              </div>
+              <div id="login-error" class="error-message"></div>
+              <button type="submit">Login</button>
+            </form>
+          </div>
+        `;
+        document.body.appendChild(modal);
 
-          if (response.ok) {
-            // ✅ FIXED: match actual response structure
-            localStorage.setItem("auth_token", data.authentication_token.token);
-            modal.remove();
-            alert("Login successful!");
-            location.reload();
-          } else {
-            document.getElementById("login-error").textContent = data.error || "Login failed";
+        document.getElementById("login-form").addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const email = document.getElementById("login-email").value;
+          const password = document.getElementById("login-password").value;
+
+          try {
+            const response = await fetch("/api/v1/tokens/authentication", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+              localStorage.setItem("auth_token", data.authentication_token.token);
+              modal.remove();
+              alert("Login successful!");
+              location.reload();
+            } else {
+              document.getElementById("login-error").textContent = data.error || "Login failed";
+            }
+          } catch (error) {
+            console.error("Login error:", error);
+            document.getElementById("login-error").textContent = "An unexpected error occurred";
           }
-        } catch (error) {
-          console.error("Login error:", error);
-          document.getElementById("login-error").textContent = "An unexpected error occurred";
-        }
+        });
+      });
+
+      // Register Modal
+      document.getElementById("register-btn")?.addEventListener("click", () => {
+        const modal = document.createElement("div");
+        modal.className = "auth-modal";
+        modal.innerHTML = `
+          <div class="auth-modal-content">
+            <span class="close-modal" onclick="this.closest('.auth-modal').remove()">&times;</span>
+            <h2>Register</h2>
+            <form id="register-form">
+              <div class="form-group">
+                <label for="register-username">Username:</label>
+                <input type="text" id="register-username" required>
+              </div>
+              <div class="form-group">
+                <label for="register-email">Email:</label>
+                <input type="email" id="register-email" required>
+              </div>
+              <div class="form-group">
+                <label for="register-password">Password:</label>
+                <input type="password" id="register-password" required>
+              </div>
+              <div id="register-error" class="error-message"></div>
+              <button type="submit">Register</button>
+            </form>
+          </div>
+        `;
+        document.body.appendChild(modal);
+
+        document.getElementById("register-form").addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const username = document.getElementById("register-username").value;
+          const email = document.getElementById("register-email").value;
+          const password = document.getElementById("register-password").value;
+
+          try {
+            const response = await fetch("/api/v1/users", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, email, password })
+            });
+
+            if (response.status === 202) {
+              alert("Registration successful! You can now log in.");
+              modal.remove();
+            } else {
+              const data = await response.json();
+              document.getElementById("register-error").textContent = data.error || "Registration failed";
+            }
+          } catch (error) {
+            console.error("Registration error:", error);
+            document.getElementById("register-error").textContent = "An unexpected error occurred";
+          }
+        });
       });
     });
-
-    // REGISTER BUTTON
-    document.getElementById("register-btn").addEventListener("click", function() {
-      const modal = document.createElement("div");
-      modal.className = "auth-modal";
-      modal.innerHTML = `
-        <div class="auth-modal-content">
-          <span class="close-modal" onclick="this.closest('.auth-modal').remove()">&times;</span>
-          <h2>Register</h2>
-          <form id="register-form">
-            <div class="form-group">
-              <label for="register-username">Username:</label>
-              <input type="text" id="register-username" required>
-            </div>
-            <div class="form-group">
-              <label for="register-email">Email:</label>
-              <input type="email" id="register-email" required>
-            </div>
-            <div class="form-group">
-              <label for="register-password">Password:</label>
-              <input type="password" id="register-password" required>
-            </div>
-            <div id="register-error" class="error-message"></div>
-            <button type="submit">Register</button>
-          </form>
-        </div>
-      `;
-      document.body.appendChild(modal);
-
-      document.getElementById("register-form").addEventListener("submit", async function(e) {
-        e.preventDefault();
-        const username = document.getElementById("register-username").value;
-        const email = document.getElementById("register-email").value;
-        const password = document.getElementById("register-password").value;
-
-        try {
-          const response = await fetch("/api/v1/users", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, email, password })
-          });
-
-          const data = await response.json();
-
-          if (response.status === 202 || response.ok) {
-            modal.remove();
-            alert("Registration successful! Please check your email to activate your account.");
-          } else {
-            document.getElementById("register-error").textContent = data.error || "Registration failed";
-          }
-        } catch (error) {
-          console.error("Registration error:", error);
-          document.getElementById("register-error").textContent = "An unexpected error occurred";
-        }
-      });
-    });
-  });
   </script>
-
-  <script src="/static/auth.js"></script>
-  <script src="/static/script.js"></script>
 </body>
 </html>
