@@ -13,6 +13,8 @@
         <header><h1>Book Manager</h1> 
             <div id="auth-section" class="auth-section">
                 <!-- Authentication buttons will be added here via JavaScript -->
+        <button id="login-btn" class="auth-btn">Login</button>
+        <button id="register-btn" class="auth-btn">Register</button>
             </div></header>
         <form id="bookForm" class="form-grid">
             <div class="form-group">
@@ -73,6 +75,120 @@
             <!-- </tbody>
         </table> -->
     </div>
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Add event listeners to the buttons
+  document.getElementById("login-btn").addEventListener("click", function() {
+    // Create login modal
+    const modal = document.createElement("div");
+    modal.className = "auth-modal";
+    modal.innerHTML = `
+      <div class="auth-modal-content">
+        <span class="close-modal" onclick="this.closest('.auth-modal').remove()">&times;</span>
+        <h2>Login</h2>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-email">Email:</label>
+            <input type="email" id="login-email" required>
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password:</label>
+            <input type="password" id="login-password" required>
+          </div>
+          <div id="login-error" class="error-message"></div>
+          <button type="submit">Login</button>
+        </form>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Add submit handler to the form
+    document.getElementById("login-form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+      
+      try {
+        const response = await fetch("/api/v1/tokens/authentication", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          localStorage.setItem("auth_token", data.authentication.token.token);
+          modal.remove();
+          alert("Login successful!");
+          location.reload();
+        } else {
+          document.getElementById("login-error").textContent = data.error || "Login failed";
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+        document.getElementById("login-error").textContent = "An unexpected error occurred";
+      }
+    });
+  });
+  
+  document.getElementById("register-btn").addEventListener("click", function() {
+    // Create register modal
+    const modal = document.createElement("div");
+    modal.className = "auth-modal";
+    modal.innerHTML = `
+      <div class="auth-modal-content">
+        <span class="close-modal" onclick="this.closest('.auth-modal').remove()">&times;</span>
+        <h2>Register</h2>
+        <form id="register-form">
+          <div class="form-group">
+            <label for="register-name">Name:</label>
+            <input type="text" id="register-name" required>
+          </div>
+          <div class="form-group">
+            <label for="register-email">Email:</label>
+            <input type="email" id="register-email" required>
+          </div>
+          <div class="form-group">
+            <label for="register-password">Password:</label>
+            <input type="password" id="register-password" required>
+          </div>
+          <div id="register-error" class="error-message"></div>
+          <button type="submit">Register</button>
+        </form>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Add submit handler to the form
+    document.getElementById("register-form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const username = document.getElementById("register-name").value;
+      const email = document.getElementById("register-email").value;
+      const password = document.getElementById("register-password").value;
+      
+      try {
+        const response = await fetch("/api/v1/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, email, password })
+        });
+        
+        if (response.status === 202) {
+          modal.remove();
+          alert("Registration successful! Please check your email to activate your account.");
+        } else {
+          const data = await response.json();
+          document.getElementById("register-error").textContent = data.error || "Registration failed";
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
+        document.getElementById("register-error").textContent = "An unexpected error occurred";
+      }
+    });
+  });
+});
+</script>
     <!-- Link to external JavaScript -->
     <script src="/static/auth.js"></script>
     <script src="/static/script.js"></script>

@@ -1,0 +1,26 @@
+curl -i -X PUT http://localhost:8000/api/v1/users/activated   -H "Content-Type: application/json"   -d '{"token": "YOUR_ACTIVATION_TOKEN"}'
+
+
+curl -X POST http://localhost:8000/api/v1/users \
+-H "Content-Type: application/json" \
+-d '{"username":"Jane Doe","email":"jane@example.com","password":"pass1234"}'
+
+
+curl -i -X POST http://localhost:8000/api/v1/tokens/authentication \
+  -H "Content-Type: application/json" \
+  -d '{"email": "jane@example.com", "password": "pass1234"}'
+
+
+--James CLark
+--email= james@gmail.com
+password= james123
+
+
+Jane Doe
+email= jane@example.com
+pass= pass1234
+
+
+email: "duke@example.com"
+password: "duke1235"
+username: "duke"

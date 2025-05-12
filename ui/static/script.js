@@ -32,39 +32,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (bookForm) {
     bookForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const title = document.getElementById("title").value;
-      const authors = document.getElementById("authors").value;
-      const isbn = document.getElementById("isbn").value;
-      const publication_date = document.getElementById("publication_date").value;
-      const genre = document.getElementById("genre").value;
-      const description = document.getElementById("description").value;
+  event.preventDefault();
 
-      let response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, authors, isbn, publication_date, genre, description })
-      });
+  // Clear previous errors
+  ["title", "authors", "isbn"].forEach(field => {
+    document.getElementById(`${field}-error`).textContent = "";
+    document.getElementById(field).style.border = "1px solid #ccc";
+  });
 
-      let resp = await response.json();
+  const title = document.getElementById("title").value;
+  const authors = document.getElementById("authors").value;
+  const isbn = document.getElementById("isbn").value;
+  const publication_date = document.getElementById("publication_date").value;
+  const genre = document.getElementById("genre").value;
+  const description = document.getElementById("description").value;
 
-      if (!resp.error) {
-        location.href = "/books"; // redirect
-      } else {
-        if (resp.error.isbn) {
-          document.getElementById("isbn-error").textContent = resp.error.isbn;
-          document.getElementById("isbn").style.border = "1px solid red";
-        }
-        if (resp.error.title) {
-          document.getElementById("title-error").textContent = resp.error.title;
-          document.getElementById("title").style.border = "1px solid red";
-        }
-        if (resp.error.authors) {
-          document.getElementById("authors-error").textContent = resp.error.authors;
-          document.getElementById("authors").style.border = "1px solid red";
-        }
-      }
-    });
+  let response = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, authors, isbn, publication_date, genre, description })
+  });
+
+  let resp = await response.json();
+
+  if (!resp.error) {
+    location.href = "/books"; // redirect
+  } else {
+    if (resp.error.isbn) {
+      document.getElementById("isbn-error").textContent = resp.error.isbn;
+      document.getElementById("isbn").style.border = "1px solid red";
+    }
+    if (resp.error.title) {
+      document.getElementById("title-error").textContent = resp.error.title;
+      document.getElementById("title").style.border = "1px solid red";
+    }
+    if (resp.error.authors) {
+      document.getElementById("authors-error").textContent = resp.error.authors;
+      document.getElementById("authors").style.border = "1px solid red";
+    }
+  }
+});
   }
 
   fetchBooks(); // Load books when DOM is ready
