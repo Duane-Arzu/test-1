@@ -176,8 +176,16 @@
               modal.remove();
             } else {
               const data = await response.json();
-              document.getElementById("register-error").textContent = data.error || "Registration failed";
-            }
+if (data.error) {
+  document.getElementById("register-error").textContent = data.error;
+} else if (data.errors) {
+  // Show the first error message from the validation list
+  const firstKey = Object.keys(data.errors)[0];
+  document.getElementById("register-error").textContent = data.errors[firstKey];
+} else {
+  document.getElementById("register-error").textContent = "Registration failed.";
+}
+}
           } catch (error) {
             console.error("Registration error:", error);
             document.getElementById("register-error").textContent = "An unexpected error occurred";
